@@ -1,57 +1,62 @@
+import java.util.Random;
+import java.util.Scanner;
+
+// this is basically the main matchmaking algorithm.
+
 public class Main {
     public static void main(String[] args) {
-        int[] nums = new int[10];
-        nums[0] = 237;
-        nums[1] = -53;
-        nums[2] = 96;
-        nums[3] = 104;
-        nums[4] = 395;
-        nums[5] = -62;
-        nums[6] = 26;
-        nums[7] = -8;
-        nums[8] = 13;
-        nums[9] = 4;
+        ArrayQueue queue = new ArrayQueue(3);
+        Random random = new Random();
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\n\nBEFORE THE SORT:\n");
-        printArray(nums);
+        int gameCount = 0;
+        int playerId = 1;
 
-        System.out.println("\n\nAFTER THE SORT:\n");
-        selectionSort(nums);
-        printArray(nums);
-        // prints the numbers; the goal? print the first set before then the second set after the sort.
-    }
-    // selection sort; finds the smallest value and puts it at the end.
-    private static void selectionSort(int[] nums) {
-        for (int i = nums.length - 1; i > 0; i--) {
-            int theSmallestIndex = i;
-            for (int j = 0; j < i; j++) {
-                if (nums[j] < nums[theSmallestIndex]) {
-                    theSmallestIndex = j;
-                }
+        System.out.println("[===] About time we started this game, yeah? Let's get to matchmaking. [===]");
+
+        // this entire big chunk of code runs while there are fewer than 10 games
+        while (gameCount < 10) {
+            int incomingPlayers = random.nextInt(5) + 1; // if it isn't obvious, this is a randomized set. wherein 1-5 players can join.
+            System.out.println("\nEnqueuing " + incomingPlayers + " new player(s)...");
+
+            // this is a for loop to create each individual player
+            // for example, it can name them from User 1, User 2, etc. then gives them a random level.
+            for (int i = 0; i < incomingPlayers; i++) {
+                Player player = new Player(
+                        playerId,
+                        "Player " + playerId,
+                        random.nextInt(100) + 1
+                );
+                queue.enqueue(player);
+                playerId++;
             }
-            int temp = nums[theSmallestIndex];
-            nums[theSmallestIndex] = nums[i];
-            nums[i] = temp;
-        }
-    }
 
-    // if 'theDescent' variable wasn't obvious, this line of code was made so that the values of the index would appear in descending order.
-    private static void bubbleSort(int[] nums) {
-        for (int theDescent = nums.length - 1; theDescent > 0; theDescent--) {
-            for (int i = 0; i < theDescent; i++) {
-                // this line compares two elements and checks to see if they're in order, these elements are switched onto the next set until they're all in order bla bla bla you get it.
-                if (nums[i] < nums[i + 1]) {
-                    int temp = nums[i];
-                    nums[i] = nums[i + 1];
-                    nums[i + 1] = temp;
+
+            System.out.println("Current Queue:");
+            queue.printQueue();
+
+            // this basically forms the game when 5 players are already in there.
+            while (queue.size() >= 5 && gameCount < 10) {
+                gameCount++;
+                System.out.println("\n----------------------------------");
+                System.out.println("Game " + gameCount + " is ready.");
+
+                for (int i = 0; i < 5; i++) {
+                    System.out.println("   Matched: " + queue.dequeue());
                 }
+                System.out.println("Game " + gameCount + " successfully started! Good luck, have fun.");
+                System.out.println("----------------------------------");
+            }
+
+            System.out.println("\nRemaining players in queue: " + queue.size());
+
+            if (gameCount < 10) {
+                System.out.println("Press ENTER for the next cycle.");
+                scanner.nextLine();
             }
         }
-    }
-    // prints the result
-    private static void printArray(int[] nums) {
-        for (int num : nums) {
-            System.out.println(num);
-        }
+
+        System.out.println("\nAll 10 games have been successfully formed. Test's over. Time to clock out, yeah?");
+        scanner.close();
     }
 }

@@ -1,62 +1,55 @@
-import java.util.Random;
-import java.util.Scanner;
-
-// this is basically the main matchmaking algorithm.
-
 public class Main {
-    public static void main(String[] args) {
-        ArrayQueue queue = new ArrayQueue(3);
-        Random random = new Random();
-        Scanner scanner = new Scanner(System.in);
+    private static int gottaFindIt(int value, int[] nums) {
+        // OH! by the way, fun lil factoid;
+        // the numbers generated below are UNSORTED, they're birthdays of people I know (including mine)
 
-        int gameCount = 0;
-        int playerId = 1;
+        // as for the steps:
+        // there's a pretty simple way this works; there's two pointers.
+        // the first pointer's at the left, it checks if the value there exists.
+        // the other one's at the right. does the same thing. then it moves the left forward and the right backward.
+        // this loops until the pointers cross over then returns at -1 if it's not found at all.
 
-        System.out.println("[===] About time we started this game, yeah? Let's get to matchmaking. [===]");
+        // Time complexity - O(n)
 
-        // this entire big chunk of code runs while there are fewer than 10 games
-        while (gameCount < 10) {
-            int incomingPlayers = random.nextInt(5) + 1; // if it isn't obvious, this is a randomized set. wherein 1-5 players can join.
-            System.out.println("\nEnqueuing " + incomingPlayers + " new player(s)...");
+        int left = 0;
+        int right = nums.length - 1;
 
-            // this is a for loop to create each individual player
-            // for example, it can name them from User 1, User 2, etc. then gives them a random level.
-            for (int i = 0; i < incomingPlayers; i++) {
-                Player player = new Player(
-                        playerId,
-                        "Player " + playerId,
-                        random.nextInt(100) + 1
-                );
-                queue.enqueue(player);
-                playerId++;
+        while (left <= right) {
+            if (nums[left] == value) {
+                return left;
             }
 
-
-            System.out.println("Current Queue:");
-            queue.printQueue();
-
-            // this basically forms the game when 5 players are already in there.
-            while (queue.size() >= 5 && gameCount < 10) {
-                gameCount++;
-                System.out.println("\n----------------------------------");
-                System.out.println("Game " + gameCount + " is ready.");
-
-                for (int i = 0; i < 5; i++) {
-                    System.out.println("   Matched: " + queue.dequeue());
-                }
-                System.out.println("Game " + gameCount + " successfully started! Good luck, have fun.");
-                System.out.println("----------------------------------");
+            if (left != right && nums[right] == value) {
+                return right;
             }
 
-            System.out.println("\nRemaining players in queue: " + queue.size());
-
-            if (gameCount < 10) {
-                System.out.println("Press ENTER for the next cycle.");
-                scanner.nextLine();
-            }
+            left++;
+            right--;
         }
 
-        System.out.println("\nAll 10 games have been successfully formed. Test's over. Time to clock out, yeah?");
-        scanner.close();
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {1005, 1202, 1004, 1226, 1029, 3103, -1022, -2906, -1404};
+        // sets up the numbers
+
+        int findMyValues = 1202;
+        int index = gottaFindIt(findMyValues, nums);
+
+        if (index == -1) {
+            System.out.println("Hey dude, " + findMyValues + " isn't here. Come again another day, yeah?.");
+        } else {
+            System.out.println("Oh. " + findMyValues + ", right? Yeah, right here. It's just at aisle " + index);
+        }
+
+        findMyValues = 3047;
+        index = gottaFindIt(findMyValues, nums);
+
+        if (index == -1) {
+            System.out.println("Hey dude, " + findMyValues + " isn't here. Come again another day, yeah?.");
+        } else {
+            System.out.println("Oh. " + findMyValues + ", right? Yeah, right here. It's just at aisle " + index);
+        }
     }
 }
